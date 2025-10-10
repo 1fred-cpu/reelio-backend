@@ -60,3 +60,4 @@ export class ConflictException extends AppException {
         super("Conflict error", HttpStatus.CONFLICT, details);
     }
 }
+//1DSulwASxvRLiqQU
