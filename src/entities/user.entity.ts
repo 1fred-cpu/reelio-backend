@@ -16,7 +16,7 @@ export class User {
   @PrimaryGeneratedColumn('uuid')
   id: string;
 
-  @Column('uuid')
+  @Column({ type: 'uuid', name: 'auth_id' })
   auth_id: string;
 
   @Column({ type: 'text', unique: true, name: 'username' })
@@ -42,9 +42,12 @@ export class User {
   })
   role: string;
 
-  @CreateDateColumn({ type: 'timestamptz' })
+  @Column({ type: 'jsonb', default: {}, name: 'preferences' })
+  preferences: Record<string, any>;
+
+  @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
   created_at: Date;
 
-  @CreateDateColumn({ type: 'timestamptz' })
+  @CreateDateColumn({ type: 'timestamptz', name: 'updated_at' })
   updated_at: Date;
 }

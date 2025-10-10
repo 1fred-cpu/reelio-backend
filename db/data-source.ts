@@ -13,6 +13,6 @@ export const AppDataSource = new DataSource({
   },
   synchronize: false,
   logging: true,
-  entities: ['dist/src/entities/**/*.js'],
-  migrations: ['dist/db/migrations/**/*.js'],
+  entities: ['dist/entities/**/*.js'],
+  migrations: ['dist/db/migrations/*.js'],
 });
