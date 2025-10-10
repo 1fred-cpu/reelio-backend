@@ -1,7 +1,11 @@
 {
   "compilerOptions": {
     "paths": {
-      "@voxa/shared/*": ["../shared/*"]
+      "@voxa/shared/*": ["../shared/*"],
+      "@modules/*": ["./src/modules/*"],
+      "@helpers/*": ["./src/helpers/*"],
+      "@exceptions/*": ["./src/common/exceptions/*"],
+      "@entities/*": ["./src/entities/*"]
     },
     "module": "commonjs",
     "declaration": true,
