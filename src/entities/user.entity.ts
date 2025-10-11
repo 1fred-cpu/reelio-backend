@@ -6,9 +6,15 @@ import {
   Entity,
 } from 'typeorm';
 
-enum UserRole {
+enum UserRoles {
   VIEWER = 'viewer',
   CREATOR = 'creator',
+}
+
+enum AuthProviders {
+  GOOGLE = 'google',
+  APPLE = 'apple',
+  EMAIL = 'email',
 }
 
 @Entity('users')
@@ -37,13 +43,21 @@ export class User {
   @Column({
     type: 'text',
     name: 'role',
-    enum: UserRole,
-    default: UserRole.VIEWER,
+    enum: UserRoles,
+    default: UserRoles.VIEWER,
   })
-  role: string;
+  role: 'viewer' | 'creator';
 
   @Column({ type: 'jsonb', default: {}, name: 'preferences' })
   preferences: Record<string, any>;
+
+  @Column({
+    type: 'text',
+    enum: AuthProviders,
+    name: 'auth_provider',
+    default: AuthProviders.EMAIL,
+  })
+  auth_provider: 'email' | 'apple' | 'google';
 
   @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
   created_at: Date;
