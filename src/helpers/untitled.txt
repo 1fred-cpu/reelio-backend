@@ -1,0 +1,19 @@
+{
+  "user": {
+    "id": "b41f64e1-77a0-4c9d-b1af-3ff986db21ac",
+    "email": "user@example.com",
+    "full_name": "John Doe",
+    "role": "user"
+  },
+  "session": {
+    "id": "8a923c22-f37a-48a7-b3bb-46a5dd6e8f30",
+    "created_at": "2025-10-13T11:00:00Z",
+    "expires_at": "2025-10-13T11:15:00Z"
+  },
+  "tokens": {
+    "access_token": "eyJhbGciOiJIUzI1NiIsInR...",
+    "refresh_token": "q7Jahf48AJH3Gx4H...",
+    "token_type": "Bearer",
+    "expires_in": 900   // seconds (15 min)
+  }
+}
