@@ -28,10 +28,3 @@ Sign up method algorithm
 6. send a email verification link to user 
 7. return a payload containing session and tokens to client 
 
-MAIL_HOST=smtp.gmail.com
-MAIL_PORT=465
-MAIL_USER=reelio284@gmail.com
-MAIL_PASS=ktlw ivha iwky oiyz
-MAIL_FROM=reelio284@gmail.com
-APP_URL=reelio://
-JWT_SECRET_KEY=12345

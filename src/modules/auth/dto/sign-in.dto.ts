@@ -1,9 +1,9 @@
-import { IsUUID, IsEmail } from 'class-validator';
+import { IsString, MinLength, IsEmail } from "class-validator";
+export class SigninDto {
+    @IsEmail()
+    email: string;
 
-export class SignInDto {
-  @IsUUID()
-  authId: string;
-
-  @IsEmail()
-  email: string;
+    @IsString()
+    @MinLength(6)
+    password: string;
 }

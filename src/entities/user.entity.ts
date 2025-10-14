@@ -25,6 +25,7 @@ export enum AccountStatus {
   ACTIVE = 'active', // fully verified
   SUSPENDED = 'suspended', // disabled by admin
   DELETED = 'deleted', // soft-deleted
+  DISABLED = 'disabled', // soft-deleted
 }
 
 @Entity('users')
