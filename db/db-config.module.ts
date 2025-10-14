@@ -19,7 +19,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
         password: config.get<string>('SUPABASE_DATABASE_PASSWORD'),
         database: config.get<string>('SUPABASE_DATABASE_NAME') || 'postgres',
         entities: [__dirname + '/dist/entities/**/*.entity{.ts,.js}'],
-        migrations: [__dirname + '/dist/db/migrations/**/*{.ts,.js}'],
+        // migrations: [__dirname + '/dist/db/migrations/**/*{.ts,.js}'],
         ssl: {
           rejectUnauthorized: false,
         },

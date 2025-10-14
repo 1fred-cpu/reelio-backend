@@ -5,7 +5,8 @@
       "@modules/*": ["./src/modules/*"],
       "@helpers/*": ["./src/helpers/*"],
       "@exceptions/*": ["./src/common/exceptions/*"],
-      "@entities/*": ["./src/entities/*"]
+      "@entities/*": ["./src/entities/*"],
+      "@mail-templates/*": ["./mail/templates/*"]
     },
     "module": "commonjs",
     "declaration": true,

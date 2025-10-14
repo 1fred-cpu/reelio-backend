@@ -17,3 +17,21 @@
     "expires_in": 900   // seconds (15 min)
   }
 }
+
+Sign up method algorithm
+
+1. extract user credentials from body 
+2. check if user already exists 
+3. throw a conflict error if there is an already user
+4. create a new user 
+5. create a new session for the user
+6. send a email verification link to user 
+7. return a payload containing session and tokens to client 
+
+MAIL_HOST=smtp.gmail.com
+MAIL_PORT=465
+MAIL_USER=reelio284@gmail.com
+MAIL_PASS=ktlw ivha iwky oiyz
+MAIL_FROM=reelio284@gmail.com
+APP_URL=reelio://
+JWT_SECRET_KEY=12345

@@ -1,13 +1,13 @@
-import { IsEmail, IsString, IsNotEmpty, IsUUID } from 'class-validator';
+import { IsEmail, IsNotEmpty, IsOptional, MinLength } from 'class-validator';
 
-export class SignUpDto {
-  @IsString({ message: 'fullName value must be a string type' })
-  @IsNotEmpty({ message: 'fullName must not be empty' })
-  fullName: string;
-
+export class SignupDto {
   @IsEmail()
   email: string;
 
-  @IsUUID()
-  authId: string;
+  @IsOptional()
+  fullName?: string;
+
+  @IsNotEmpty()
+  @MinLength(8)
+  password: string;
 }

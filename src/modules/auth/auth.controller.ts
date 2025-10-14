@@ -1,30 +1,26 @@
-import { Controller, Post, Body, ValidationPipe } from '@nestjs/common';
+import { Controller, Post, Body, ValidationPipe, Req } from '@nestjs/common';
 import { AuthService } from './auth.service';
-import { SignUpDto } from './dto/sign-up.dto';
-import { SignInDto } from './dto/sign-in.dto';
-import { SignInWithGoogleDto } from './dto/sign-in-with-google.dto';
-import { SignInWithAppleDto } from './dto/sign-in-with-apple.dto ';
+import { SignupDto } from './dto/sign-up.dto';
+import { FastifyRequest } from 'fastify';
+
 @Controller('auth')
 export class AuthController {
   constructor(private readonly authService: AuthService) {}
 
   @Post('signup')
-  async signUpUser(@Body(ValidationPipe) dto: SignUpDto) {
-    return this.authService.signUpUser(dto);
-  }
+  async signUp(
+    @Body(ValidationPipe) dto: SignupDto,
+    @Req() request: FastifyRequest,
+  ) {
+    // Get user agent
+    const userAgent = request.headers['user-agent'] || 'Unknown';
 
-  @Post('signin')
-  async signInUser(@Body(ValidationPipe) dto: SignInDto) {
-    return this.authService.signInUser(dto);
-  }
+    // Get IP address (works behind proxy too if trust proxy is enabled)
+    const ipAddress =
+      (request.headers['x-forwarded-for'] as string)?.split(',')[0]?.trim() ||
+      request.socket.remoteAddress ||
+      'Unknown';
 
-  @Post('signin-with-google')
-  async signInWithGoogle(@Body(ValidationPipe) dto: SignInWithGoogleDto) {
-    return this.authService.signInWithGoogle(dto);
-  }
-
-  @Post('signin-with-apple')
-  async signInWithApple(@Body(ValidationPipe) dto: SignInWithAppleDto) {
-    return this.authService.signInWithApple(dto);
+    return this.authService.signup(dto, ipAddress, userAgent);
   }
 }

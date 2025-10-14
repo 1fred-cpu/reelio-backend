@@ -1,71 +1,123 @@
 import {
-    PrimaryGeneratedColumn,
-    Column,
-    CreateDateColumn,
-    UpdateDateColumn,
-    Entity
-    ,OneToMany
-} from "typeorm";
-import { Session } from "./session.entity";
-enum UserRoles {
-    VIEWER = "viewer",
-    CREATOR = "creator"
+  PrimaryGeneratedColumn,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  Entity,
+  OneToMany,
+} from 'typeorm';
+import { Session } from './session.entity';
+
+export enum UserRoles {
+  VIEWER = 'viewer',
+  CREATOR = 'creator',
+  ADMIN = 'admin',
 }
 
-enum AuthProviders {
-    GOOGLE = "google",
-    APPLE = "apple",
-    EMAIL = "email"
+export enum AuthProviders {
+  GOOGLE = 'google',
+  APPLE = 'apple',
+  EMAIL = 'email',
 }
 
-@Entity("users")
+export enum AccountStatus {
+  PENDING = 'pending', // awaiting email verification
+  ACTIVE = 'active', // fully verified
+  SUSPENDED = 'suspended', // disabled by admin
+  DELETED = 'deleted', // soft-deleted
+}
+
+@Entity('users')
 export class User {
-    @PrimaryGeneratedColumn("uuid")
-    id: string;
+  /* ============================================================
+   * CORE FIELDS
+   * ============================================================ */
+  @PrimaryGeneratedColumn('uuid')
+  id: string;
 
-    @Column({ type: "uuid", name: "auth_id" })
-    auth_id: string;
+  @Column({ type: 'text', name: 'full_name' })
+  full_name: string;
 
-    @Column({ type: "text", unique: true, name: "username" })
-    username: string;
+  @Column({ type: 'text', unique: true, name: 'email' })
+  email: string;
 
-    @Column({ type: "text", name: "full_name" })
-    full_name: string;
+  @Column({ type: 'text', unique: true, name: 'password' })
+  password: string;
 
-    @Column({ type: "text", unique: true, name: "email" })
-    email: string;
+  @Column({ type: 'text', name: 'avatar_url', nullable: true, default: null })
+  avatar_url?: string;
 
-    @Column({ type: "text", name: "avatar_url", nullable: true, default: null })
-    avatar_url?: string;
+  @Column({ type: 'text', name: 'bio', nullable: true, default: null })
+  bio?: string;
 
-    @Column({ type: "text", name: "bio", nullable: true, default: null })
-    bio?: string;
+  @Column({
+    type: 'enum',
+    enum: UserRoles,
+    name: 'role',
+    default: UserRoles.VIEWER,
+  })
+  role: UserRoles;
 
-    @Column({
-        type: "text",
-        name: "role",
-        enum: UserRoles,
-        default: UserRoles.VIEWER
-    })
-    role: "viewer" | "creator";
+  @Column({
+    type: 'enum',
+    enum: AuthProviders,
+    name: 'auth_provider',
+    default: AuthProviders.EMAIL,
+  })
+  auth_provider: AuthProviders;
 
-    @Column({ type: "jsonb", default: {}, name: "preferences" })
-    preferences: Record<string, any>;
+  @Column({ type: 'jsonb', default: {}, name: 'preferences' })
+  preferences: Record<string, any>;
 
-    @Column({
-        type: "text",
-        enum: AuthProviders,
-        name: "auth_provider",
-        default: AuthProviders.EMAIL
-    })
-    auth_provider: "email" | "apple" | "google";
+  /* ============================================================
+   * ACCOUNT VERIFICATION + SECURITY
+   * ============================================================ */
+  @Column({ type: 'boolean', name: 'email_verified', default: false })
+  email_verified: boolean; // Boolean flag for email verification status.
 
-    @CreateDateColumn({ type: "timestamptz", name: "created_at" })
-    created_at: Date;
+  @Column({ type: 'text', name: 'email_verification_token', nullable: true })
+  email_verification_token?: string; // Random token sent to user’s email for verification.
 
-    @CreateDateColumn({ type: "timestamptz", name: "updated_at" })
-    updated_at: Date;
+  @Column({
+    type: 'timestamptz',
+    name: 'email_verification_expires',
+    nullable: true,
+  })
+  email_verification_expires?: Date; // Expiration timestamp for verification token.
 
-    @OneToMany(() => Session, session => session.user)
-    sessions: Session[];
+  @Column({ type: 'text', name: 'password_reset_token', nullable: true })
+  password_reset_token?: string; // Token for resetting password.
+
+  @Column({
+    type: 'timestamptz',
+    name: 'password_reset_expires',
+    nullable: true,
+  })
+  password_reset_expires?: Date; // Expiration timestamp for password reset.
+
+  @Column({
+    type: 'enum',
+    enum: AccountStatus,
+    default: AccountStatus.PENDING,
+    name: 'status',
+  })
+  status: AccountStatus; // Account lifecycle status (pending, active, suspended, etc.).
+
+  @Column({ type: 'boolean', name: 'two_factor_enabled', default: false })
+  two_factor_enabled: boolean; // Whether 2FA is enabled.
+
+  @Column({ type: 'text', name: 'two_factor_secret', nullable: true })
+  two_factor_secret?: string; // Secret used to generate/validate OTPs (TOTP).
+
+  /* ============================================================
+   * METADATA
+   * ============================================================ */
+  @CreateDateColumn({ type: 'timestamptz', name: 'created_at' })
+  created_at: Date;
+
+  @UpdateDateColumn({ type: 'timestamptz', name: 'updated_at' })
+  updated_at: Date;
+
+  @OneToMany(() => Session, (session) => session.user)
+  sessions: Session[];
 }
