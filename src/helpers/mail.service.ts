@@ -150,6 +150,38 @@ export class MailService {
   }
 
   /* ============================================================
+   * SEND PASSWORD RESET EMAIL
+   * ============================================================ */
+  async sendPasswordResetEmail(
+    to: string,
+    name: string,
+    resetToken: string,
+  ): Promise<void> {
+    try {
+      const resetLink = `${this.configService.get<string>('RESET_PASSWORD_LINK')}'/reset-password?token=${resetToken}`;
+
+      await this.sendTemplateMail({
+        to,
+        subject: 'Reset your Reelio account password',
+        template: 'reset-password',
+        context: {
+          name,
+          resetUrl: resetLink,
+        },
+      });
+
+      this.logger.log(`✅ Password reset email sent to ${to}`);
+    } catch (error) {
+      this.logger.error(
+        `❌ Failed to send password reset email to ${to}: ${error.message}`,
+      );
+      throw new InternalServerErrorException(
+        'Failed to send password reset email',
+      );
+    }
+  }
+
+  /* ============================================================
    * HANDLEBARS TEMPLATE COMPILER
    * ============================================================ */
   private compileTemplate(

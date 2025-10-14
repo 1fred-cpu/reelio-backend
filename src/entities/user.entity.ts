@@ -76,23 +76,35 @@ export class User {
   @Column({ type: 'boolean', name: 'email_verified', default: false })
   email_verified: boolean; // Boolean flag for email verification status.
 
-  @Column({ type: 'text', name: 'email_verification_token', nullable: true })
-  email_verification_token?: string; // Random token sent to user’s email for verification.
+  @Column({
+    type: 'text',
+    name: 'email_verification_token',
+    nullable: true,
+    default: null,
+  })
+  email_verification_token?: string | null; // Random token sent to user’s email for verification.
 
   @Column({
     type: 'timestamptz',
-    name: 'email_verification_expires',
+    name: 'email_verification_expires_at',
     nullable: true,
+    default: null,
   })
-  email_verification_expires?: Date; // Expiration timestamp for verification token.
+  email_verification_expires_at?: Date | null; // Expiration timestamp for verification token.
 
-  @Column({ type: 'text', name: 'password_reset_token', nullable: true })
+  @Column({
+    type: 'text',
+    name: 'password_reset_token',
+    nullable: true,
+    default: null,
+  })
   password_reset_token?: string; // Token for resetting password.
 
   @Column({
     type: 'timestamptz',
     name: 'password_reset_expires',
     nullable: true,
+    default: null,
   })
   password_reset_expires?: Date; // Expiration timestamp for password reset.
 
