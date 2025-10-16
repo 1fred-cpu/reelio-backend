@@ -719,8 +719,7 @@ export class AuthService {
     }
     /* ===== FIND USER ===== */
     async findUser(userId: string) {
-        
-        const manager = this.dataSource.manager
+        const manager = this.dataSource.manager;
 
         try {
             // Get user repository
@@ -732,7 +731,7 @@ export class AuthService {
                 },
                 select: {
                     id: true,
-                    name: true,
+                    full_name: true,
                     email: true,
                     role: true,
                     preferences: true,
@@ -745,7 +744,11 @@ export class AuthService {
                 );
             }
             // Normalize user data to be camelCase
-            const normalizeUser = { ...user, avatarUrl: user.avatar_url };
+            const normalizeUser = {
+                ...user,
+                avatarUrl: user.avatar_url,
+                fullName: user.full_name
+            };
             return { user: normalizeUser };
         } catch (error) {
             this.logger.error("Error finding user", error as any);

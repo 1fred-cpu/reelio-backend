@@ -7,6 +7,11 @@ import {
     OneToMany
 } from "typeorm";
 import { Session } from "./session.entity";
+import { Content } from "./content.entity";
+import { WatchHistory } from "./watch-history.entity";
+import { Follow } from "./follow.entity";
+import { Like } from "./like.entity";
+import { View } from "./view.entity";
 
 export enum UserRoles {
     VIEWER = "viewer",
@@ -70,6 +75,9 @@ export class User {
     @Column({ type: "jsonb", default: {}, name: "preferences" })
     preferences: Record<string, any>;
 
+    @Column({ type: "boolean", default: false })
+    featured: boolean;
+
     /* ============================================================
      * ACCOUNT VERIFICATION + SECURITY
      * ============================================================ */
@@ -82,7 +90,7 @@ export class User {
         default: null,
         nullable: true
     })
-    email_confirmed_at?: Date | null ; // Date  for email confirmed at.
+    email_confirmed_at?: Date | null; // Date  for email confirmed at.
 
     @Column({
         type: "text",
@@ -139,6 +147,29 @@ export class User {
     @UpdateDateColumn({ type: "timestamptz", name: "updated_at" })
     updated_at: Date;
 
+    // One user can  have multiple sessions
     @OneToMany(() => Session, session => session.user)
     sessions: Session[];
+
+    // One user can have multiple contents
+    @OneToMany(() => Content, content => content.creator)
+    contents: Content[];
+
+    // One user can have watch histories
+    @OneToMany(() => WatchHistory, watchHistory => watchHistory.user)
+    watchHistories: WatchHistory[];
+
+    // One user have following users
+    @OneToMany(() => Follow, follow => follow.follower)
+    following: Follow[];
+
+    // One user have many followers
+    @OneToMany(() => Follow, follow => follow.following)
+    followers: Follow[];
+
+    @OneToMany(() => Like, like => like.user)
+    likes: Like[];
+
+    @OneToMany(() => View, view => view.user)
+    views: View[];
 }
