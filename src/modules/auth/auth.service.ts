@@ -762,7 +762,58 @@ export class AuthService {
             );
         }
     }
+    /* ===== SEND EMAIL VERIFICATION ===== */
+    async sendEmailVerification(email: string) {
+        try {
+            // Check if email is empty
+            if (!email) {
+                throw new BadRequestException("Email was not provided");
+            }
+            // Get user repository
+            const userRepo = this.dataSource.getRepository(User);
+            // Check if email exist with a user
+            const user = await userRepo.findOne({
+                where: { email },
+                select: {
+                    full_name: true,
+                    email_verification_token: true,
+                    email_verification_expires_at: true
+                }
+            });
+            if (!user) {
+                throw new UnauthorizedException("Invalid email provided");
+            }
+            // Creates a email verification token and return it
+            const { emailVerificationRaw } =
+                this.handleEmailVerificationToken(user);
+            // Save changes made on user (verification token )
+            await userRepo.save(user);
 
+            // Send email verification link to email
+            await this.mailService.sendEmailVerificationLink({
+                to: email,
+                name: user.full_name,
+                token: emailVerificationRaw
+            });
+            return {
+                message: "Email verification link has being sent to your inbox"
+            };
+        } catch (error) {
+            if (
+                error instanceof BadRequestException ||
+                error instanceof UnauthorizedException
+            ) {
+                throw error;
+            }
+            this.logger.error(
+                "Failed to send email verification link ",
+                error as any
+            );
+            throw new InternalServerErrorException(
+                "Failed to send email verification link"
+            );
+        }
+    }
     /* ===== HELPERS ===== */
 
     /* ===== HANDLE SESSION CREATION ===== */

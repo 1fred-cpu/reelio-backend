@@ -22,6 +22,6 @@ async function bootstrap() {
   app.setGlobalPrefix('/v1/api');
   app.useGlobalFilters(new AllExceptionsFilter());
 
-  await app.listen(process.env.PORT ?? 5000, '0.0.0.0'); // ensure it listens on all interfaces
+  await app.listen(process.env.PORT ?? 5000, /*'0.0.0.0'*/); // ensure it listens on all interfaces
 }
 bootstrap();

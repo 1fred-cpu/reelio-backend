@@ -40,6 +40,9 @@ export class HomeService {
                 recommended
             };
         } catch (error) {
+          if(error instanceof NotFoundException){
+            throw error 
+          }
             this.logger.error("Failed to get home feed", error);
             throw new InternalServerErrorException(
                 "An unexpected error occurred while fetching home feed"
@@ -58,6 +61,7 @@ export class HomeService {
                 title: true,
                 type: true,
                 thumbnail_url: true,
+                created_at: true,
                 creator: {
                     id: true,
                     full_name: true,
@@ -89,30 +93,28 @@ export class HomeService {
         if (!userId) return [];
 
         const watchRepo = this.dataSource.getRepository(WatchHistory);
+        const records = await this.dataSource
+            .getRepository(WatchHistory)
+            .createQueryBuilder("watch")
+            .leftJoinAndSelect("watch.content", "content")
+            .select([
+                "watch.id AS id",
+                "watch.progress_seconds AS progress_seconds",
+                "content.id AS content_id",
+                "content.title AS title",
+                "content.thumbnail_url AS thumbnail_url"
+            ])
+            .where("watch.user_id = :userId", { userId })
+            .andWhere("watch.progress_seconds != :progress", { progress: 100 })
+            .orderBy("watch.updated_at", "DESC")
+            .limit(10)
+            .getRawMany();
 
-        const records = await watchRepo.find({
-            where: {
-                user_id: userId,
-                progress_seconds: Not(100)
-            },
-            select: {
-                progress_seconds: true,
-                content: {
-                    id: true,
-                    thumbnail_url: true,
-                    title: true
-                }
-            },
-            take: 10,
-            order: { updated_at: "DESC" },
-            relations: ["content"]
-        });
-
-        return records.map(record => ({
-            contentId: record.content.id,
-            title: record.content.title,
-            progressSeconds: record.progress_seconds,
-            thumbnailUrl: record.content.thumbnail_url
+        return records.map(r => ({
+            contentId: r.content_id,
+            title: r.title,
+            progressSeconds: r.progress_seconds,
+            thumbnailUrl: r.thumbnail_url
         }));
     }
 
@@ -123,27 +125,35 @@ export class HomeService {
         // Example: Trending = most liked or viewed recently
         const trending = await contentRepo
             .createQueryBuilder("content")
-            .leftJoinAndSelect("content.creator", "creator")
+            .leftJoin("content.creator", "creator")
+            .leftJoin("content.likes", "likes")
+            .leftJoin("content.views", "views")
             .select([
-                "content.id",
-                "content.title",
-                "content.thumbnail_url",
-                "COUNT(content.likes) AS likes_count",
-                "COUNT(content.views) AS views_count",
-                "creator.id",
-                "creator.full_name",
-                "creator.avatar_url"
+                "content.id AS id",
+                "content.title AS title",
+                "content.thumbnail_url AS thumbnail_url",
+                "creator.id AS creator_id",
+                "creator.full_name AS creator_full_name",
+                "creator.avatar_url AS creator_avatar_url",
+                "COUNT(DISTINCT likes.id) AS likes_count",
+                "COUNT(DISTINCT views.id) AS views_count"
             ])
-            .where("content.status = :status", { status: "published" })
+            .where("content.status = :status", {
+                status: ContentStatus.PUBLISHED
+            })
+            .groupBy("content.id")
+            .addGroupBy("creator.id")
             .orderBy("likes_count", "DESC")
             .addOrderBy("views_count", "DESC")
             .limit(10)
-            .getMany();
+            .getRawMany();
 
         return trending.map(item => ({
             id: item.id,
             title: item.title,
             thumbnailUrl: item.thumbnail_url,
+            likesCount: item.likes_count,
+            viewsCount: item.views_count,
             creator: {
                 id: item.creator.id,
                 fullName: item.creator.full_name,
