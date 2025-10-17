@@ -126,7 +126,8 @@ export class MailService {
     token: string;
   }): Promise<void> {
     try {
-      const verificationUrl = `${this.frontendUrl}/verify-email?token=${options.token}`;
+      const verificationUrl = `${this.frontendUrl}/auth/verify-email?token=${options.token}`;
+      console.log(verificationUrl);
 
       await this.sendTemplateMail({
         to: options.to,

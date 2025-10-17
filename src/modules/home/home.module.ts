@@ -1,13 +1,18 @@
-import { Module } from "@nestjs/common";
-import { HomeService } from "./home.service";
-import { HomeController } from "./home.controller";
-import { TypeOrmModule } from "@nestjs/typeorm";
-import { Content } from "@entities/content.entity";
-import { User } from "@entities/user.entity";
-import { WatchHistory } from "@entities/watch-history.entity";
+import { Module } from '@nestjs/common';
+import { HomeService } from './home.service';
+import { HomeController } from './home.controller';
+import { TypeOrmModule } from '@nestjs/typeorm';
+import { Content } from '@entities/content.entity';
+import { User } from '@entities/user.entity';
+import { WatchHistory } from '@entities/watch-history.entity';
+import { Like } from '@entities/like.entity';
+import { View } from '@entities/view.entity';
+import { Follow } from '@entities/follow.entity';
 @Module({
-    imports: [TypeOrmModule.forFeature([Content, User, WatchHistory])],
-    controllers: [HomeController],
-    providers: [HomeService]
+  imports: [
+    TypeOrmModule.forFeature([Content, User, WatchHistory, Like, View, Follow]),
+  ],
+  controllers: [HomeController],
+  providers: [HomeService],
 })
 export class HomeModule {}
